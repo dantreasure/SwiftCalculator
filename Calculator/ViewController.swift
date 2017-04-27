@@ -8,31 +8,20 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+final class ViewController: UIViewController {
+    
+    // MARK: -
+    // MARK: Outlets
 
-    @IBOutlet weak var display: UILabel!
+    @IBOutlet private weak var display: UILabel!
     
-    var userIsInTheMiddleOfTyping = false
+    // MARK: -
+    // MARK: Private Properties
     
-    @IBAction func touchDigit(_ sender: UIButton) {
-        
-        let digit = sender.currentTitle!
-        
-        if userIsInTheMiddleOfTyping {
-            let textCurrentlyInDisplay = display.text!
-            display.text = textCurrentlyInDisplay + digit
-        } else {
-            display.text = digit
-            userIsInTheMiddleOfTyping = true
-        }
-    }
+    private var userIsInTheMiddleOfTyping = false
+    private var brain = CalculatorBrain()
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-//        view.backgroundColor = .bannerColor
-    }
-   
-    var displayValue: Double {
+    private var displayValue: Double {
         get {
             return Double(display.text!)!
         }
@@ -41,10 +30,24 @@ class ViewController: UIViewController {
         }
     }
     
-    var brain = CalculatorBrain()
+    // MARK: -
+    // MARK: Actions
     
-    @IBAction func performOperation(_ sender: UIButton) {
-        if userIsInTheMiddleOfTyping{
+    @IBAction private func touchDigit(_ sender: UIButton) {
+        let digit = sender.currentTitle!
+        
+        if userIsInTheMiddleOfTyping {
+            let textCurrentlyInDisplay = display.text ?? ""
+            display.text = "\(textCurrentlyInDisplay)\(digit)"
+        } else {
+            display.text = digit
+            userIsInTheMiddleOfTyping = true
+        }
+    }
+    
+    
+    @IBAction private func performOperation(_ sender: UIButton) {
+        if userIsInTheMiddleOfTyping {
             brain.setOperand(displayValue)
             userIsInTheMiddleOfTyping = false
         }
@@ -56,6 +59,14 @@ class ViewController: UIViewController {
         if let result = brain.result {
             displayValue = result
         }
+    }
+    
+    // MARK: -
+    // MARK: View Controller Lifecycle
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        //view.backgroundColor = .bannerColor
     }
 }
 
